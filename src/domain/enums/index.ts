@@ -1,0 +1,12 @@
+export enum Role {
+  ADMIN = 'ADMIN',
+  OPERATOR = 'OPERATOR',
+}
+
+export enum StatusViagem {
+  INICIADA = 'INICIADA',
+  EM_TRANSITO = 'EM_TRANSITO',
+  TRANSBORDO = 'TRANSBORDO',
+  ENTREGUE = 'ENTREGUE',
+  CANCELADA = 'CANCELADA',
+}
