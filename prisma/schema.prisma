@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Cliente {
+  id        String   @id @default(uuid())
+  nome      String
+  email     String?
+  telefone  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  viagens Viagem[]
+
+  @@map("clientes")
+}
+
+model Operador {
+  id           String   @id @default(uuid())
+  nome         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("OPERATOR")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  viagens Viagem[]
+
+  @@index([email])
+  @@map("operadores")
+}
+
+model Viagem {
+  id                String        @id @default(uuid())
+  codigoCarga       String        @unique
+  
+  // Origem
+  origemTexto       String
+  origemCidade      String?
+  origemPais        String?
+  origemLat         Float?
+  origemLng         Float?
+  
+  // Destino
+  destinoTexto      String
+  destinoCidade     String?
+  destinoPais       String?
+  destinoLat        Float?
+  destinoLng        Float?
+  
+  dataSaida         DateTime
+  previsaoEntrega   DateTime
+  
+  clienteId         String
+  operadorId        String
+  
+  statusAtual       String  @default("INICIADA")
+  
+  // Localização atual
+  localAtualTexto   String?
+  localAtualLat     Float?
+  localAtualLng     Float?
+  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  cliente           Cliente       @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  operador          Operador      @relation(fields: [operadorId], references: [id], onDelete: NoAction)
+  historicos        HistoricoMovimentacao[]
+
+  @@index([codigoCarga])
+  @@index([clienteId])
+  @@index([operadorId])
+  @@index([statusAtual])
+  @@index([dataSaida])
+  @@index([previsaoEntrega])
+  @@map("viagens")
+}
+
+model HistoricoMovimentacao {
+  id          String        @id @default(uuid())
+  viagemId    String
+  status      String
+  ocorridoEm  DateTime      @default(now())
+  localTexto  String
+  lat         Float?
+  lng         Float?
+  observacoes String?
+  
+  viagem      Viagem        @relation(fields: [viagemId], references: [id], onDelete: Cascade)
+
+  @@index([viagemId])
+  @@index([ocorridoEm])
+  @@map("historico_movimentacoes")
+}
