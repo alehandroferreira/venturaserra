@@ -1,0 +1,42 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    container_name: rastreamento-cargas-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong!Passw0rd
+      - MSSQL_COLLATION=Latin1_General_100_CI_AI_SC_UTF8
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - rastreamento-network
+    healthcheck:
+      test: ["CMD-SHELL", "echo > /dev/tcp/localhost/1433 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  adminer:
+    image: adminer:latest
+    container_name: rastreamento-cargas-adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - rastreamento-network
+    environment:
+      - ADMINER_DEFAULT_SERVER=sqlserver
+      - ADMINER_DESIGN=nette
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+volumes:
+  sqlserver_data:
+    driver: local
+
+networks:
+  rastreamento-network:
+    driver: bridge
