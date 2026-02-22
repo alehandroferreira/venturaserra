@@ -60,7 +60,7 @@ Pronto! A API vai subir em `http://localhost:3000`.
 - Swagger: `http://localhost:3000/docs`
 - Health check: `http://localhost:3000/health`
 
-## Testando via Swagger (modo humano e sem drama)
+## Testando via Swagger
 
 A doc do Swagger ja esta com os schemas e parametros. O fluxo mais simples para testar:
 
